@@ -5,6 +5,9 @@ env/
 .venv/
 ENV/
 
+# Auto-generated activation script (created by setup-intel-gpu-llm.sh)
+activate-intel-gpu.sh
+
 # llama.cpp build artifacts and wrappers
 llama.cpp/build/
 llama-run

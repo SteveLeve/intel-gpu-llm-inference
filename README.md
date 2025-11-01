@@ -1,10 +1,20 @@
-# Intel GPU LLM Setup for Linux
+# 🚀 Intel GPU LLM Inference for Linux
 
-A collection of scripts to enable local LLM inference on **Intel Xe Graphics** (Iris Xe, Arc) using OpenVINO GenAI and other frameworks.
+> Unlock your Intel Xe GPU for local LLM inference with OpenVINO
 
-## 🎯 Purpose
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Intel GPU](https://img.shields.io/badge/Intel-Xe%20Graphics-0071C5?logo=intel)](https://www.intel.com/content/www/us/en/products/docs/discrete-gpus/arc/desktop/a-series/overview.html)
+[![OpenVINO](https://img.shields.io/badge/OpenVINO-2024-76B900)](https://docs.openvino.ai/)
 
-This repository provides automated setup scripts for running Large Language Models (LLMs) on Intel integrated GPUs in Linux environments. It solves the common problem of Intel GPU support being limited or non-existent in popular LLM frameworks like Ollama.
+A complete toolkit for running Large Language Models on **Intel Xe Graphics** (Iris Xe, Arc) using OpenVINO GenAI. Perfect for developers with Intel business laptops who want to run local LLMs efficiently.
+
+## 🎯 Why This Project?
+
+- ⚡ **Performance**: Get 2-3x faster inference vs CPU-only with Intel integrated GPUs
+- 💼 **Business Laptops**: Works on common Intel Xe laptops (Dell XPS, ThinkPad, HP EliteBook)
+- 🔒 **Privacy**: Run models locally without cloud dependencies
+- 📊 **Benchmarking**: Built-in tools to measure OpenVINO vs CPU performance
+- 🎓 **Learning**: Complete setup guides and examples for beginners
 
 ## 🖥️ Hardware Requirements
 
@@ -56,7 +66,25 @@ This repository provides automated setup scripts for running Large Language Mode
 
 ## 🚀 Quick Start
 
-### Setup Intel GPU Inference (OpenVINO)
+### ⚡ Fastest Way (Complete Example)
+
+```bash
+# Clone repository
+git clone <your-repo-url>
+cd intel-gpu-llm-inference
+git submodule update --init --recursive
+
+# Run setup (one time)
+./setup-intel-gpu-llm.sh
+
+# If prompted, log out and back in for group changes to take effect
+# Then run the quickstart example
+./quickstart-example.sh
+```
+
+This downloads TinyLlama (1.1B), converts it to OpenVINO format, and runs a test inference on your Intel GPU. Takes ~10 minutes first time.
+
+### 📖 Step-by-Step Setup
 
 ```bash
 # 1. Run the setup script
@@ -316,15 +344,17 @@ pip install --force-reinstall openvino-genai
 
 ## 🤝 Contributing
 
-Contributions welcome! If you find bugs or have improvements:
+We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
-1. Test on your Intel GPU setup
-2. Document your hardware/software configuration
-3. Submit issues or pull requests
+**Especially valuable**:
+- Hardware test reports (help others know what works)
+- Performance benchmarks from different Intel GPU generations
+- Bug fixes and documentation improvements
+- New model configurations and optimizations
 
 ## 📄 License
 
-MIT License - Feel free to use and modify these scripts for your projects.
+MIT License - See [LICENSE](LICENSE) for details.
 
 ## 🙏 Acknowledgments
 
