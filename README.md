@@ -16,6 +16,12 @@ A complete toolkit for running Large Language Models on **Intel Xe Graphics** (I
 - 📊 **Benchmarking**: Built-in tools to measure OpenVINO vs CPU performance
 - 🎓 **Learning**: Complete setup guides and examples for beginners
 
+## 📖 Documentation
+
+- **[GETTING_STARTED.md](GETTING_STARTED.md)** - Complete beginner's guide (start here!)
+- **[BENCHMARK_GUIDE.md](BENCHMARK_GUIDE.md)** - Performance testing methodology
+- **[CONTRIBUTING.md](CONTRIBUTING.md)** - How to contribute
+
 ## 🖥️ Hardware Requirements
 
 - **GPU**: Intel Xe Graphics (TigerLake, Alderlake, or newer)
