@@ -96,3 +96,4 @@ oneapi/
 # Test outputs
 test_output/
 results/
+PROJECT_SUMMARY.txt
