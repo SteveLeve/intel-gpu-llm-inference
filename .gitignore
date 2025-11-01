@@ -1,0 +1,95 @@
+# Python Virtual Environments
+openvino_env/
+venv/
+env/
+.venv/
+ENV/
+
+# llama.cpp build artifacts and wrappers
+llama.cpp/build/
+llama-run
+llama-convert
+
+# Python Cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Converted Model Directories (OpenVINO IR format)
+*_ir/
+*_int8/
+*_int4/
+
+# GGUF Models (llama.cpp)
+models/
+*.gguf
+
+# Benchmark results
+benchmark_results*.json
+results/
+
+# Downloaded Model Files
+*.bin
+*.onnx
+*.xml
+*.gguf
+*.safetensors
+
+# Model Cache Directories
+.cache/
+huggingface/
+.huggingface/
+
+# Ollama Models
+.ollama/
+
+# Logs
+*.log
+logs/
+
+# OS Files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# IDE
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+*.ipynb
+
+# Environment variables
+.env
+.env.local
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Intel oneAPI
+intel/
+oneapi/
+
+# Large files (models typically exceed 100MB)
+*.pth
+*.pt
+*.ckpt
+*.h5
+
+# Test outputs
+test_output/
+results/
