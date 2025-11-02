@@ -10,16 +10,31 @@ A complete toolkit for running Large Language Models on **Intel Xe Graphics** (I
 
 ## 🎯 Why This Project?
 
-- ⚡ **Performance**: Get 2-3x faster inference vs CPU-only with Intel integrated GPUs
+- ⚡ **Performance**: 1.3x faster for 7B+ models on Intel Xe Graphics (tested & verified)
 - 💼 **Business Laptops**: Works on common Intel Xe laptops (Dell XPS, ThinkPad, HP EliteBook)
 - 🔒 **Privacy**: Run models locally without cloud dependencies
 - 📊 **Benchmarking**: Built-in tools to measure OpenVINO vs CPU performance
 - 🎓 **Learning**: Complete setup guides and examples for beginners
 
+## 📊 Performance Results
+
+Tested on **Intel Core i7-1185G7 + Iris Xe Graphics**:
+
+| Model | GPU Speed | CPU Speed | Winner | Speedup |
+|-------|-----------|-----------|--------|---------|
+| TinyLlama 1.1B | 19.6 tok/s | 27.4 tok/s | CPU | CPU 1.4x faster |
+| Phi-3 Mini 3.8B | 10.5 tok/s | 10.5 tok/s | Tie | Equal |
+| **Mistral 7B** | **9.4 tok/s** | 7.1 tok/s | **GPU** | **GPU 1.32x faster** ✅ |
+
+**Key Finding:** GPU shows clear advantage for 7B+ models. CPU is competitive for smaller models ≤4B.
+
+📈 See detailed results: [PERFORMANCE_COMPARISON_SUMMARY.md](PERFORMANCE_COMPARISON_SUMMARY.md)
+
 ## 📖 Documentation
 
 - **[GETTING_STARTED.md](GETTING_STARTED.md)** - Complete beginner's guide (start here!)
 - **[BENCHMARK_GUIDE.md](BENCHMARK_GUIDE.md)** - Performance testing methodology
+- **[QUICK_PERFORMANCE_REFERENCE.md](QUICK_PERFORMANCE_REFERENCE.md)** - Quick performance guide
 - **[CONTRIBUTING.md](CONTRIBUTING.md)** - How to contribute
 
 ## 🖥️ Hardware Requirements

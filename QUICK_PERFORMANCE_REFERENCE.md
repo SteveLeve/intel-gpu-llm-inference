@@ -1,6 +1,6 @@
 # Quick Performance Reference
 
-> **TL;DR**: On Intel i7-1185G7 + Iris Xe, CPU equals or beats GPU for models ≤ 4B parameters.
+> **TL;DR**: On Intel i7-1185G7 + Iris Xe, GPU shows 1.32x advantage for 7B+ models. CPU is competitive for smaller models ≤ 4B.
 
 ## Test Results at a Glance
 
@@ -8,6 +8,7 @@
 |-------|-----|-----|--------|
 | TinyLlama 1.1B | 19.6 tok/s | 27.4 tok/s | **CPU 1.4x** ⚡ |
 | Phi-3 Mini 3.8B | 10.5 tok/s | 10.5 tok/s | **Tie** 🤝 |
+| Mistral 7B | 9.4 tok/s | 7.1 tok/s | **GPU 1.32x** 🎮 |
 
 ## When to Use What
 
@@ -18,7 +19,8 @@
 - Development/testing
 
 ### Use GPU 🎮
-- Models 7B+ params
+- Models 7B+ params (**confirmed faster!**)
+- Sustained/long workloads
 - Batch inference
 - Production consistency
 - CPU busy with other tasks
@@ -38,7 +40,8 @@ python3 -c "import openvino_genai as ov_genai; pipe = ov_genai.LLMPipeline('phi3
 
 - **PERFORMANCE_TEST_RESULTS.md** - TinyLlama detailed results
 - **PHI3_PERFORMANCE_RESULTS.md** - Phi-3 Mini detailed results  
+- **MISTRAL_7B_PERFORMANCE_RESULTS.md** - Mistral 7B detailed results
 - **PERFORMANCE_COMPARISON_SUMMARY.md** - Complete analysis
 
 ---
-*Tested on Intel Core i7-1185G7 + Iris Xe, November 2024*
+*Tested on Intel Core i7-1185G7 + Iris Xe, November 2025*
