@@ -36,6 +36,18 @@ MODELS = {
         "huggingface_id": "meta-llama/Meta-Llama-3-8B-Instruct",
         "output_dir": "llama3_8b_ir",
         "description": "Meta's Llama 3, requires HuggingFace authentication"
+    },
+    "qwen2vl": {
+        "name": "Qwen2-VL 7B Instruct",
+        "huggingface_id": "Qwen/Qwen2-VL-7B-Instruct",
+        "output_dir": "qwen2_vl_7b_ir",
+        "description": "Qwen2 vision-language model (7B), supports both text and images"
+    },
+    "llama31": {
+        "name": "Llama 3.1 8B Instruct",
+        "huggingface_id": "meta-llama/Llama-3.1-8B-Instruct",
+        "output_dir": "llama31_8b_ir",
+        "description": "Meta's Llama 3.1 8B, tested with Ollama for comparison"
     }
 }
 
@@ -141,6 +153,7 @@ Available models:
   phi3     - Phi-3 Mini (3.8B) - Best for testing
   mistral  - Mistral 7B Instruct
   llama3   - Llama 3 8B Instruct (requires HF auth)
+  qwen2vl  - Qwen2-VL 7B Instruct (vision-language model)
         """
     )
     
