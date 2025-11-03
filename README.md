@@ -49,7 +49,7 @@ Tested on **Intel Core i7-1185G7 + Iris Xe Graphics** (11 configurations across 
 ## 📖 Documentation
 
 - **[COMPREHENSIVE_PERFORMANCE_COMPARISON.md](COMPREHENSIVE_PERFORMANCE_COMPARISON.md)** - Complete test results & analysis
-- **[llm-benchmark-charts.html](llm-benchmark-charts.html)** - Performance comparison charts
+- **[llm-benchmark-charts.html](https://steveleve.github.io/llm-benchmark-charts.html)** - Performance comparison charts
 - **[GETTING_STARTED.md](GETTING_STARTED.md)** - Complete beginner's guide
 - **[BENCHMARK_GUIDE.md](BENCHMARK_GUIDE.md)** - Performance testing methodology
 - **[QUICK_PERFORMANCE_REFERENCE.md](QUICK_PERFORMANCE_REFERENCE.md)** - Quick performance guide
