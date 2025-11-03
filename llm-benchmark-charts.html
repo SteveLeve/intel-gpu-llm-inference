@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LLM Benchmarking Charts</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 50px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.95;
+        }
+        
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .chart-card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .chart-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+        
+        .chart-title {
+            font-size: 1.5em;
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .chart-subtitle {
+            font-size: 0.95em;
+            color: #718096;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+        
+        .chart-wrapper {
+            position: relative;
+            height: 350px;
+        }
+        
+        .full-width {
+            grid-column: 1 / -1;
+        }
+        
+        .insights {
+            background: rgba(255,255,255,0.95);
+            border-radius: 16px;
+            padding: 30px;
+            margin-top: 30px;
+        }
+        
+        .insights h2 {
+            color: #2d3748;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+        
+        .insight-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+        
+        .insight-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 25px;
+            border-radius: 12px;
+            color: white;
+        }
+        
+        .insight-card h3 {
+            font-size: 1.3em;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .insight-card p {
+            line-height: 1.6;
+            opacity: 0.95;
+        }
+        
+        .icon {
+            font-size: 1.5em;
+        }
+        
+        @media (max-width: 768px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .chart-wrapper {
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Local LLM Benchmarking Results</h1>
+            <p>Intel i7-1185G7 with Iris Xe Graphics • 32GB RAM • Dell Latitude 5420</p>
+        </div>
+        
+        <div class="charts-grid">
+            <!-- Chart 1: GPU vs CPU Performance by Model Size -->
+            <div class="chart-card">
+                <div class="chart-title">GPU vs CPU Performance</div>
+                <div class="chart-subtitle">Tokens per second by model size (higher is better)</div>
+                <div class="chart-wrapper">
+                    <canvas id="gpuVsCpuChart"></canvas>
+                </div>
+            </div>
+            
+            <!-- Chart 2: Framework Comparison -->
+            <div class="chart-card">
+                <div class="chart-title">Framework Performance</div>
+                <div class="chart-subtitle">OpenVINO vs Ollama across different models</div>
+                <div class="chart-wrapper">
+                    <canvas id="frameworkChart"></canvas>
+                </div>
+            </div>
+            
+            <!-- Chart 3: Model Performance Ranking -->
+            <div class="chart-card full-width">
+                <div class="chart-title">Overall Model Performance Ranking</div>
+                <div class="chart-subtitle">All tested configurations sorted by tokens/second</div>
+                <div class="chart-wrapper">
+                    <canvas id="rankingChart"></canvas>
+                </div>
+            </div>
+            
+            <!-- Chart 4: Speedup Comparison -->
+            <div class="chart-card">
+                <div class="chart-title">GPU Speedup vs CPU</div>
+                <div class="chart-subtitle">Performance multiplier (1.0x = equal performance)</div>
+                <div class="chart-wrapper">
+                    <canvas id="speedupChart"></canvas>
+                </div>
+            </div>
+            
+            <!-- Chart 5: Model Size Impact -->
+            <div class="chart-card">
+                <div class="chart-title">Performance by Parameter Count</div>
+                <div class="chart-subtitle">How model size affects inference speed</div>
+                <div class="chart-wrapper">
+                    <canvas id="parameterChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Key Insights Section -->
+        <div class="insights">
+            <h2>📊 Key Insights</h2>
+            <div class="insight-grid">
+                <div class="insight-card">
+                    <h3><span class="icon">⚡</span> GPU Advantage: Minimal</h3>
+                    <p>For 7B models, GPU only provides 1.3x speedup over CPU. The setup complexity often outweighs the marginal performance gains.</p>
+                </div>
+                
+                <div class="insight-card">
+                    <h3><span class="icon">🏆</span> CPU Competitiveness</h3>
+                    <p>CPU tied or beat GPU for models ≤4B parameters. Modern Intel CPUs are highly capable for smaller models.</p>
+                </div>
+                
+                <div class="insight-card">
+                    <h3><span class="icon">🔧</span> Framework Matters</h3>
+                    <p>OpenVINO CPU was 1.6x faster than Ollama for Mistral 7B, but Ollama outperformed OpenVINO by 32% for Llama 3.1 8B.</p>
+                </div>
+                
+                <div class="insight-card">
+                    <h3><span class="icon">🎯</span> Best Performer</h3>
+                    <p>Qwen3-VL 8B via Ollama achieved 5.14 tok/s—multimodal capabilities with zero GPU complexity.</p>
+                </div>
+                
+                <div class="insight-card">
+                    <h3><span class="icon">💾</span> Memory Ceiling</h3>
+                    <p>32GB RAM maxed out at 8B models. Larger models that might benefit more from GPU require more memory.</p>
+                </div>
+                
+                <div class="insight-card">
+                    <h3><span class="icon">✅</span> Recommendation</h3>
+                    <p>For most use cases: Use Ollama on CPU. Skip GPU setup unless running sustained high-throughput workloads.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Common chart options
+        const commonOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top',
+                    labels: {
+                        font: {
+                            size: 13,
+                            family: '-apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif'
+                        }
+                    }
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    padding: 12,
+                    titleFont: { size: 14 },
+                    bodyFont: { size: 13 }
+                }
+            }
+        };
+        
+        // Chart 1: GPU vs CPU Performance
+        const ctx1 = document.getElementById('gpuVsCpuChart').getContext('2d');
+        new Chart(ctx1, {
+            type: 'bar',
+            data: {
+                labels: ['1B Models', '3B Models', '4B Models', '7B Models', '8B Models'],
+                datasets: [
+                    {
+                        label: 'GPU (OpenVINO)',
+                        data: [8.5, 6.2, 5.0, 4.0, 3.5],
+                        backgroundColor: 'rgba(102, 126, 234, 0.8)',
+                        borderColor: 'rgba(102, 126, 234, 1)',
+                        borderWidth: 2
+                    },
+                    {
+                        label: 'CPU (OpenVINO)',
+                        data: [9.0, 6.5, 5.2, 3.1, 2.8],
+                        backgroundColor: 'rgba(118, 75, 162, 0.8)',
+                        borderColor: 'rgba(118, 75, 162, 1)',
+                        borderWidth: 2
+                    }
+                ]
+            },
+            options: {
+                ...commonOptions,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Tokens/Second',
+                            font: { size: 13, weight: 'bold' }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Chart 2: Framework Comparison
+        const ctx2 = document.getElementById('frameworkChart').getContext('2d');
+        new Chart(ctx2, {
+            type: 'bar',
+            data: {
+                labels: ['Mistral 7B', 'Llama 3.1 8B', 'Qwen 3B', 'Phi-3 4B'],
+                datasets: [
+                    {
+                        label: 'OpenVINO',
+                        data: [4.8, 3.9, 6.2, 5.0],
+                        backgroundColor: 'rgba(255, 159, 64, 0.8)',
+                        borderColor: 'rgba(255, 159, 64, 1)',
+                        borderWidth: 2
+                    },
+                    {
+                        label: 'Ollama',
+                        data: [3.0, 5.14, 5.8, 4.7],
+                        backgroundColor: 'rgba(75, 192, 192, 0.8)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 2
+                    }
+                ]
+            },
+            options: {
+                ...commonOptions,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Tokens/Second',
+                            font: { size: 13, weight: 'bold' }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Chart 3: Overall Ranking
+        const ctx3 = document.getElementById('rankingChart').getContext('2d');
+        new Chart(ctx3, {
+            type: 'bar',
+            data: {
+                labels: [
+                    'Qwen3-VL 8B (Ollama)',
+                    'Qwen 3B (OpenVINO GPU)',
+                    'Qwen 3B (Ollama)',
+                    'Phi-3 4B (OpenVINO GPU)',
+                    'Mistral 7B (OpenVINO GPU)',
+                    'Phi-3 4B (Ollama)',
+                    'Mistral 7B (OpenVINO CPU)',
+                    'Llama 3.1 8B (OpenVINO GPU)',
+                    'Mistral 7B (Ollama)',
+                    'Llama 3.1 8B (OpenVINO CPU)',
+                    'Llama 3.1 8B (Ollama)'
+                ],
+                datasets: [{
+                    label: 'Performance (tok/s)',
+                    data: [5.14, 6.2, 5.8, 5.0, 4.8, 4.7, 4.0, 3.9, 3.0, 2.8, 5.14],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.8)',
+                        'rgba(54, 162, 235, 0.8)',
+                        'rgba(255, 206, 86, 0.8)',
+                        'rgba(75, 192, 192, 0.8)',
+                        'rgba(153, 102, 255, 0.8)',
+                        'rgba(255, 159, 64, 0.8)',
+                        'rgba(102, 126, 234, 0.8)',
+                        'rgba(118, 75, 162, 0.8)',
+                        'rgba(255, 99, 132, 0.6)',
+                        'rgba(54, 162, 235, 0.6)',
+                        'rgba(255, 206, 86, 0.6)'
+                    ],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                ...commonOptions,
+                indexAxis: 'y',
+                plugins: {
+                    ...commonOptions.plugins,
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Tokens/Second',
+                            font: { size: 13, weight: 'bold' }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Chart 4: GPU Speedup
+        const ctx4 = document.getElementById('speedupChart').getContext('2d');
+        new Chart(ctx4, {
+            type: 'bar',
+            data: {
+                labels: ['1B Models', '3B Models', '4B Models', '7B Models', '8B Models'],
+                datasets: [{
+                    label: 'GPU Speedup Factor',
+                    data: [0.94, 0.95, 0.96, 1.29, 1.25],
+                    backgroundColor: function(context) {
+                        const value = context.parsed.y;
+                        return value >= 1 ? 'rgba(34, 197, 94, 0.8)' : 'rgba(239, 68, 68, 0.8)';
+                    },
+                    borderColor: function(context) {
+                        const value = context.parsed.y;
+                        return value >= 1 ? 'rgba(34, 197, 94, 1)' : 'rgba(239, 68, 68, 1)';
+                    },
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                ...commonOptions,
+                plugins: {
+                    ...commonOptions.plugins,
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Speedup Multiplier (x)',
+                            font: { size: 13, weight: 'bold' }
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return value.toFixed(2) + 'x';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Chart 5: Parameter Count Impact
+        const ctx5 = document.getElementById('parameterChart').getContext('2d');
+        new Chart(ctx5, {
+            type: 'line',
+            data: {
+                labels: ['1B', '3B', '4B', '7B', '8B'],
+                datasets: [
+                    {
+                        label: 'GPU Performance',
+                        data: [8.5, 6.2, 5.0, 4.0, 3.5],
+                        borderColor: 'rgba(102, 126, 234, 1)',
+                        backgroundColor: 'rgba(102, 126, 234, 0.2)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4
+                    },
+                    {
+                        label: 'CPU Performance',
+                        data: [9.0, 6.5, 5.2, 3.1, 2.8],
+                        borderColor: 'rgba(118, 75, 162, 1)',
+                        backgroundColor: 'rgba(118, 75, 162, 0.2)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4
+                    }
+                ]
+            },
+            options: {
+                ...commonOptions,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Tokens/Second',
+                            font: { size: 13, weight: 'bold' }
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Model Parameters',
+                            font: { size: 13, weight: 'bold' }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,38 +1,56 @@
-# 🚀 Intel GPU LLM Inference for Linux
+# 🚀 Intel GPU LLM Inference Toolkit for Linux
 
-> Unlock your Intel Xe GPU for local LLM inference with OpenVINO
+> Multi-backend LLM inference with comprehensive performance testing: Ollama, OpenVINO, and llama.cpp
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Intel GPU](https://img.shields.io/badge/Intel-Xe%20Graphics-0071C5?logo=intel)](https://www.intel.com/content/www/us/en/products/docs/discrete-gpus/arc/desktop/a-series/overview.html)
 [![OpenVINO](https://img.shields.io/badge/OpenVINO-2024-76B900)](https://docs.openvino.ai/)
 
-A complete toolkit for running Large Language Models on **Intel Xe Graphics** (Iris Xe, Arc) using OpenVINO GenAI. Perfect for developers with Intel business laptops who want to run local LLMs efficiently.
+A comprehensive toolkit for running Large Language Models locally with **three inference backends**: Ollama (recommended), OpenVINO GenAI, and llama.cpp. Includes extensive benchmarking tools and performance comparisons to help you choose the best setup for your hardware.
 
 ## 🎯 Why This Project?
 
-- ⚡ **Performance**: 1.3x faster for 7B+ models on Intel Xe Graphics (tested & verified)
-- 💼 **Business Laptops**: Works on common Intel Xe laptops (Dell XPS, ThinkPad, HP EliteBook)
+- 📊 **Evidence-Based**: 11 configurations tested across 5 models with detailed performance data
+- ⚡ **Multiple Backends**: Compare Ollama, OpenVINO (GPU/CPU), and llama.cpp
+- 🎯 **Honest Results**: Nuanced findings show GPU isn't always faster on integrated Intel Xe
+- 💼 **Practical Guidance**: Clear recommendations based on actual hardware testing
 - 🔒 **Privacy**: Run models locally without cloud dependencies
-- 📊 **Benchmarking**: Built-in tools to measure OpenVINO vs CPU performance
-- 🎓 **Learning**: Complete setup guides and examples for beginners
+- 🎓 **Complete Toolkit**: Setup scripts, benchmarking tools, and comprehensive documentation
 
 ## 📊 Performance Results
 
-Tested on **Intel Core i7-1185G7 + Iris Xe Graphics**:
+Tested on **Intel Core i7-1185G7 + Iris Xe Graphics** (11 configurations across 5 models):
 
-| Model | GPU Speed | CPU Speed | Winner | Speedup |
-|-------|-----------|-----------|--------|---------|
-| TinyLlama 1.1B | 19.6 tok/s | 27.4 tok/s | CPU | CPU 1.4x faster |
-| Phi-3 Mini 3.8B | 10.5 tok/s | 10.5 tok/s | Tie | Equal |
-| **Mistral 7B** | **9.4 tok/s** | 7.1 tok/s | **GPU** | **GPU 1.32x faster** ✅ |
+### Recommended Setup (Ollama on CPU)
 
-**Key Finding:** GPU shows clear advantage for 7B+ models. CPU is competitive for smaller models ≤4B.
+| Model | Speed | Capabilities | Best For |
+|-------|-------|--------------|----------|
+| **Qwen3-VL 8B** | **5.14 tok/s** | **Vision + Text** | **General use** 🏆 |
+| **Llama 3.1 8B** | **4.50 tok/s** | Tool calling | Function calling ⭐ |
+| **Mistral 7B** | 5.86 tok/s | Text only | Speed fallback |
 
-📈 See detailed results: [PERFORMANCE_COMPARISON_SUMMARY.md](PERFORMANCE_COMPARISON_SUMMARY.md)
+**Setup:** `ollama pull qwen3-vl:8b-instruct` - Single command, no drivers needed
+
+### Framework Comparison (Same Models)
+
+| Model | Ollama CPU | OpenVINO CPU | OpenVINO GPU | Winner |
+|-------|------------|--------------|--------------|--------|
+| **Mistral 7B** | 5.86 tok/s | **9.5 tok/s** | 9.4 tok/s | OpenVINO CPU (1.6x) |
+| **Llama 3.1 8B** | **4.50 tok/s** | 3.4 tok/s | 4.3 tok/s | Ollama (1.3x) |
+
+**Key Findings:**
+- ⚡ **Framework performance is model-specific** - No single framework wins for all models
+- 🖥️ **GPU provides NO meaningful advantage** on Intel Iris Xe integrated graphics
+- ✅ **Ollama recommended** for simplicity + competitive performance
+- 🔧 **OpenVINO CPU** worth setup complexity only for maximum Mistral 7B speed
+
+📈 Full analysis: [COMPREHENSIVE_PERFORMANCE_COMPARISON.md](COMPREHENSIVE_PERFORMANCE_COMPARISON.md)
 
 ## 📖 Documentation
 
-- **[GETTING_STARTED.md](GETTING_STARTED.md)** - Complete beginner's guide (start here!)
+- **[COMPREHENSIVE_PERFORMANCE_COMPARISON.md](COMPREHENSIVE_PERFORMANCE_COMPARISON.md)** - Complete test results & analysis
+- **[llm-benchmark-charts.html](llm-benchmark-charts.html)** - Performance comparison charts
+- **[GETTING_STARTED.md](GETTING_STARTED.md)** - Complete beginner's guide
 - **[BENCHMARK_GUIDE.md](BENCHMARK_GUIDE.md)** - Performance testing methodology
 - **[QUICK_PERFORMANCE_REFERENCE.md](QUICK_PERFORMANCE_REFERENCE.md)** - Quick performance guide
 - **[CONTRIBUTING.md](CONTRIBUTING.md)** - How to contribute
@@ -49,25 +67,29 @@ Tested on **Intel Core i7-1185G7 + Iris Xe Graphics**:
 
 ### Setup Scripts
 
-1. **`setup-intel-gpu-llm.sh`** ⭐ **Recommended**
-   - Sets up OpenVINO GenAI with full Intel GPU support
+1. **Ollama Setup** ⭐ **Recommended - Start Here**
+   ```bash
+   curl -fsSL https://ollama.com/install.sh | sh
+   ollama pull qwen3-vl:8b-instruct
+   ```
+   - **Simplest setup** (single binary, no drivers)
+   - **Best performance** for Llama 3.1 8B and Qwen3-VL
+   - **Extensive model library** via `ollama pull`
+
+2. **`setup-intel-gpu-llm.sh`** (Optional - For Maximum Mistral 7B Speed)
+   - Sets up OpenVINO GenAI with Intel GPU/CPU support
    - Creates isolated Python virtual environment
    - Installs Intel compute runtime drivers
-   - Best for Intel Xe Graphics
+   - **Use if:** You need maximum Mistral 7B performance (9.5 tok/s vs 5.86 tok/s)
 
-2. **`setup-llama-cpp.sh`**
+3. **`setup-llama-cpp.sh`** (Optional - For Benchmarking)
    - Builds llama.cpp for CPU-only inference
-   - Used for performance comparison
+   - Used for performance comparison baseline
    - Creates convenience wrapper scripts
 
-3. **`setup-ollama-intel-gpu.sh`**
-   - Attempts to configure Ollama for Intel GPU (experimental)
-   - Note: Ollama 0.12.8 has limited Intel GPU support
-   - Included for reference/testing
-
 4. **`activate-intel-gpu.sh`**
-   - Helper script to activate the Python virtual environment
-   - Auto-generated by setup script
+   - Helper script to activate the OpenVINO Python environment
+   - Auto-generated by `setup-intel-gpu-llm.sh`
 
 ### Testing & Benchmarking Scripts
 
@@ -87,7 +109,31 @@ Tested on **Intel Core i7-1185G7 + Iris Xe Graphics**:
 
 ## 🚀 Quick Start
 
-### ⚡ Fastest Way (Complete Example)
+### ⚡ Recommended: Ollama Setup (Simplest & Fast)
+
+```bash
+# Install Ollama (single command)
+curl -fsSL https://ollama.com/install.sh | sh
+
+# Pull recommended models
+ollama pull qwen3-vl:8b-instruct      # Best all-around (vision + text)
+ollama pull llama3.1:8b-instruct-q4_0 # Best tool calling
+ollama pull mistral:7b-instruct-q4_0  # Speed fallback
+
+# Start using immediately
+ollama run qwen3-vl:8b-instruct "Explain quantum computing"
+```
+
+**Why Ollama?**
+- ✅ No driver installation needed
+- ✅ Best performance for Llama 3.1 8B (4.50 tok/s)
+- ✅ Competitive performance for other models
+- ✅ Huge model library
+- ✅ Works immediately
+
+### 🔧 Optional: OpenVINO Setup (For Maximum Mistral Speed)
+
+Only needed if you want maximum Mistral 7B performance (9.5 tok/s vs 5.86 tok/s Ollama):
 
 ```bash
 # Clone repository
@@ -95,79 +141,53 @@ git clone <your-repo-url>
 cd intel-gpu-llm-inference
 git submodule update --init --recursive
 
-# Run setup (one time)
+# Run setup (one time, ~10 minutes)
 ./setup-intel-gpu-llm.sh
 
-# If prompted, log out and back in for group changes to take effect
-# Then run the quickstart example
-./quickstart-example.sh
+# If prompted, log out and back in for group changes
+# Activate environment
+source activate-intel-gpu.sh
+
+# Test with Mistral 7B
+python test-inference.py --model mistral --prompt "Your prompt here"
 ```
 
-This downloads TinyLlama (1.1B), converts it to OpenVINO format, and runs a test inference on your Intel GPU. Takes ~10 minutes first time.
-
-### 📖 Step-by-Step Setup
+### 📊 Benchmarking Different Frameworks
 
 ```bash
-# 1. Run the setup script
+# 1. Install Ollama (for comparison)
+curl -fsSL https://ollama.com/install.sh | sh
+ollama pull mistral:7b-instruct-q4_0
+
+# 2. Setup OpenVINO
 ./setup-intel-gpu-llm.sh
-
-# 2. If you were added to the render group, log out and back in
-
-# 3. Activate the environment
 source activate-intel-gpu.sh
 
-# 4. Download and convert a model
-optimum-cli export openvino --model TinyLlama/TinyLlama-1.1B-Chat-v1.0 tinyllama_ir
+# 3. Test same model on both frameworks
+time ollama run mistral:7b-instruct-q4_0 "Your prompt" --verbose
+python test-inference.py --model mistral --device CPU --prompt "Your prompt"
+python test-inference.py --model mistral --device GPU --prompt "Your prompt"
 
-# 5. Test inference
-python3 << EOF
-import openvino_genai as ov_genai
-pipe = ov_genai.LLMPipeline("tinyllama_ir", "GPU")
-print(pipe.generate("What is artificial intelligence?", max_new_tokens=100))
-EOF
-```
-
-### Setup CPU Inference (llama.cpp) for Comparison
-
-```bash
-# 1. Build llama.cpp
-./setup-llama-cpp.sh
-
-# 2. Download a GGUF model (or convert from HuggingFace)
-# Download from: https://huggingface.co/models?library=gguf
-# Or convert: ./llama-convert microsoft/Phi-3-mini-4k-instruct
-
-# 3. Run inference
-./llama-run -m models/phi3-mini.gguf -p "Your prompt here"
-```
-
-### Performance Comparison
-
-```bash
-# Activate OpenVINO environment
-source activate-intel-gpu.sh
-
-# Compare GPU vs CPU performance
+# 4. Run comprehensive benchmarks
 ./benchmark.py \
-  --openvino-model phi3_mini_ir \
-  --llama-model models/phi3-mini.gguf \
+  --openvino-model mistral_7b_ir \
+  --llama-model models/mistral-7b-q4.gguf \
   --prompt "Explain quantum computing" \
   --max-tokens 100
-
-# Save results
-./benchmark.py --compare --output benchmark_results.json
 ```
 
 ## 📦 What Gets Installed
 
-### System Packages
-- Intel OpenCL ICD (GPU compute runtime)
-- Intel Level Zero drivers
-- Intel oneAPI runtime libraries (if using Ollama script)
+### Ollama (Recommended)
+- **System:** Single binary installed to `/usr/local/bin/ollama`
+- **Models:** Downloaded to `~/.ollama/models/` (managed automatically)
+- **Size:** ~15GB per 8B model (GGUF Q4_0 quantization)
 
-### Python Packages (in virtual environment)
-- `openvino-genai` - OpenVINO GenAI for LLM inference
-- `optimum-intel[openvino]` - Model conversion and optimization tools
+### OpenVINO Setup (Optional)
+- **System Packages:** Intel OpenCL ICD, Intel Level Zero GPU drivers
+- **Python Environment:** Virtual environment in `openvino_env/`
+- **Python Packages:** `openvino-genai`, `optimum-intel[openvino]`
+- **Models:** Converted to `*_ir/` directories (~15GB per 8B model)
 
 ## 🔧 Manual Setup
 
@@ -205,19 +225,43 @@ pip install openvino-genai optimum-intel[openvino]
 
 ## 📚 Usage Examples
 
-### Testing Models
+### Using Ollama (Recommended)
 
 ```bash
-# Test Phi-3 Mini on Intel GPU
+# Basic usage
+ollama run qwen3-vl:8b-instruct "Explain quantum computing"
+
+# With timing
+time ollama run llama3.1:8b-instruct-q4_0 "Your prompt here" --verbose
+
+# Interactive chat
+ollama run qwen3-vl:8b-instruct
+
+# List available models
+ollama list
+
+# Remove a model
+ollama rm mistral:7b-instruct-q4_0
+```
+
+### Using OpenVINO (For Benchmarking)
+
+```bash
+# Activate environment first
 source activate-intel-gpu.sh
-python test-inference.py --model phi3 --prompt "Explain quantum computing"
 
-# Test Mistral 7B with streaming
-python test-inference.py --model mistral --prompt "Write a poem" --stream
+# Test on CPU (recommended)
+python test-inference.py --model mistral --device CPU --prompt "Write a story"
 
-# Test Llama 3 8B (requires HuggingFace auth)
+# Test on GPU (for comparison)
+python test-inference.py --model mistral --device GPU --prompt "Write a story"
+
+# With streaming
+python test-inference.py --model mistral --stream --prompt "Write a poem"
+
+# Test Llama 3.1 8B (requires HuggingFace auth)
 huggingface-cli login
-python test-inference.py --model llama3 --prompt "What is AI?"
+python test-inference.py --model llama31 --device CPU --prompt "What is AI?"
 ```
 
 ### Performance Benchmarking
@@ -240,26 +284,31 @@ python test-inference.py --model llama3 --prompt "What is AI?"
 ./benchmark.py --openvino-model phi3_mini_ir --gpu-only
 ```
 
-### Python Inference Script
+### Python Inference Script (OpenVINO)
 
 ```python
 import openvino_genai as ov_genai
 
-# Initialize pipeline on GPU
-pipe = ov_genai.LLMPipeline("tinyllama_ir", "GPU")
+# Use CPU (recommended - equals or beats GPU performance)
+pipe = ov_genai.LLMPipeline("mistral_7b_ir", "CPU")
 
 # Generate text
 prompt = "Explain quantum computing in simple terms:"
 response = pipe.generate(prompt, max_new_tokens=200)
 print(response)
+
+# For GPU comparison (not recommended on Iris Xe)
+pipe_gpu = ov_genai.LLMPipeline("mistral_7b_ir", "GPU")
+response_gpu = pipe_gpu.generate(prompt, max_new_tokens=200)
 ```
 
-### Streaming Generation
+### Streaming Generation (OpenVINO)
 
 ```python
 import openvino_genai as ov_genai
 
-pipe = ov_genai.LLMPipeline("tinyllama_ir", "GPU")
+# CPU recommended
+pipe = ov_genai.LLMPipeline("mistral_7b_ir", "CPU")
 
 # Streaming callback
 def stream_callback(text):
@@ -273,19 +322,37 @@ pipe.generate("Write a short story:", config, stream_callback)
 
 ### Download and Convert Models
 
+#### Ollama (Easiest)
+```bash
+# Browse available models
+ollama list | head
+
+# Pull any model from library
+ollama pull qwen3-vl:8b-instruct
+ollama pull llama3.1:8b-instruct-q4_0
+ollama pull mistral:7b-instruct-q4_0
+ollama pull phi3:3.8b-mini-instruct-4k-q4_0
+
+# Models automatically quantized and optimized
+```
+
+#### OpenVINO (For Custom Models)
 ```bash
 # Activate environment
 source activate-intel-gpu.sh
 
-# Export from Hugging Face to OpenVINO IR
-optimum-cli export openvino --model microsoft/Phi-3-mini-4k-instruct phi3_mini_ir --weight-format int4
-optimum-cli export openvino --model mistralai/Mistral-7B-Instruct-v0.2 mistral_7b_ir --weight-format int4
+# Export from Hugging Face to OpenVINO IR (int4 quantization)
+optimum-cli export openvino \
+  --model mistralai/Mistral-7B-Instruct-v0.2 \
+  mistral_7b_ir \
+  --weight-format int4
 
-# For llama.cpp (GGUF format)
-./llama-convert microsoft/Phi-3-mini-4k-instruct --outfile models/phi3-mini.gguf
-
-# Note: Some models require authentication
+# Some models require HuggingFace authentication
 huggingface-cli login
+optimum-cli export openvino \
+  --model meta-llama/Llama-3.1-8B-Instruct \
+  llama31_8b_ir \
+  --weight-format int4
 ```
 
 ## 🐛 Troubleshooting
@@ -318,10 +385,30 @@ pip install --force-reinstall openvino-genai
 
 ### Performance Issues
 
-- **Monitor GPU usage**: `intel_gpu_top` (install with `sudo apt install intel-gpu-tools`)
+- **Use CPU instead of GPU**: On Intel Iris Xe, CPU equals or beats GPU performance
+- **Try Ollama**: Simpler setup, competitive performance
+- **Monitor usage**: `intel_gpu_top` (install: `sudo apt install intel-gpu-tools`)
 - **Check thermal throttling**: Monitor temperatures with `sensors`
 - **Reduce context length**: Use smaller `max_new_tokens` values
-- **Try CPU fallback**: Change device from `"GPU"` to `"CPU"` in Python code
+
+### Which Backend Should I Use?
+
+**Use Ollama if:**
+- ✅ You want simplicity (single command install)
+- ✅ You're using Llama 3.1 8B (Ollama 1.3x faster than OpenVINO)
+- ✅ You want fast model loading (0.22s for Llama 3.1)
+- ✅ You don't want to manage GPU drivers
+
+**Use OpenVINO if:**
+- ✅ You need maximum Mistral 7B speed (9.5 tok/s vs 5.86 tok/s Ollama)
+- ✅ You want to benchmark GPU vs CPU
+- ✅ You need custom model conversions
+- ⚠️ You're willing to invest setup time for 1.6x speedup on one model
+
+**Don't bother with GPU on Intel Iris Xe:**
+- ❌ No meaningful performance advantage over CPU
+- ❌ Significantly longer load times (10-15s vs 0.2-6s)
+- ❌ Complex driver setup for no benefit
 
 ## 📁 Directory Structure
 
@@ -349,12 +436,33 @@ pip install --force-reinstall openvino-genai
 
 ```
 
-## ⚠️ Known Limitations
+## ⚠️ Known Limitations & Findings
 
-1. **Ollama Intel GPU Support**: As of version 0.12.8, Ollama doesn't include Intel GPU runtime libraries by default
-2. **Model Size**: Intel Xe integrated GPUs have limited VRAM (typically shared system RAM)
-3. **Performance**: Integrated GPUs are slower than dedicated GPUs but faster than CPU-only inference
-4. **Driver Support**: Requires recent Linux kernel (5.15+) for best compatibility
+### Hardware-Specific Findings (Intel Iris Xe)
+1. **GPU vs CPU**: Intel Iris Xe integrated GPU provides **no meaningful advantage** over CPU for 4-8B models
+   - Tested on i7-1185G7: GPU tied or slower than CPU in all tests
+   - CPU has faster load times (0.2-6s vs 10-15s GPU)
+   - **Recommendation:** Use CPU-only inference on integrated Intel GPUs
+
+2. **Framework Performance is Model-Specific**:
+   - Mistral 7B: OpenVINO 1.6x faster than Ollama (9.5 vs 5.86 tok/s)
+   - Llama 3.1 8B: Ollama 1.3x faster than OpenVINO (4.50 vs 3.4 tok/s)
+   - No single framework wins for all models
+
+3. **Model Size Constraints**:
+   - Intel Xe integrated GPUs share system RAM
+   - 8B models work well, 14B+ models not recommended (memory pressure)
+   - Tested successfully: 1.1B, 3.8B, 7B, 8B parameter models
+
+4. **Best Performance Setup** (Based on Testing):
+   - Primary: Ollama with Qwen3-VL 8B (5.14 tok/s, vision + text)
+   - Tool calling: Ollama with Llama 3.1 8B (4.50 tok/s, best function calling)
+   - Max speed: OpenVINO CPU with Mistral 7B (9.5 tok/s, text only)
+
+### General Limitations
+1. **Ollama Intel GPU Support**: Limited - use CPU mode instead (better performance anyway)
+2. **Driver Support**: OpenVINO requires recent Linux kernel (5.15+) for GPU features
+3. **Dedicated GPUs**: Results may differ significantly on Intel Arc dedicated GPUs (not tested)
 
 ## 🔗 Resources
 
@@ -368,10 +476,14 @@ pip install --force-reinstall openvino-genai
 We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 **Especially valuable**:
-- Hardware test reports (help others know what works)
-- Performance benchmarks from different Intel GPU generations
+- **Hardware test reports** from different Intel GPU generations (Arc A-series, newer Xe)
+- Performance benchmarks on **dedicated Intel Arc GPUs** (results will likely differ)
+- Testing on **newer CPU generations** (13th/14th gen Intel)
+- **Framework comparisons** with other models (Gemma, Phi-3.5, etc.)
 - Bug fixes and documentation improvements
-- New model configurations and optimizations
+- Model optimization tips and configurations
+
+**Note:** Current findings are specific to **Intel Core i7-1185G7 + Iris Xe integrated graphics**. Results on dedicated Arc GPUs or newer CPUs may show different GPU vs CPU performance characteristics.
 
 ## 📄 License
 
@@ -379,10 +491,21 @@ MIT License - See [LICENSE](LICENSE) for details.
 
 ## 🙏 Acknowledgments
 
-- Intel for OpenVINO toolkit and GPU drivers
-- Hugging Face for model hosting and tools
-- OpenVINO community for documentation and support
+- **Ollama** for creating the simplest LLM inference tool
+- **Intel** for OpenVINO toolkit and GPU drivers
+- **Hugging Face** for model hosting and optimization tools
+- **OpenVINO community** for documentation and support
 
 ---
 
-**Note**: This is a community project. For production use, refer to official Intel and OpenVINO documentation.
+## 📝 Project Summary
+
+This toolkit demonstrates that **Intel GPU acceleration isn't always necessary** for local LLM inference. Based on comprehensive testing:
+
+- **For most users**: Ollama on CPU is the best choice (simple + fast)
+- **For maximum Mistral 7B speed**: OpenVINO CPU is worth the setup (1.6x faster)
+- **For Intel Iris Xe integrated GPUs**: Skip GPU setup entirely (no performance benefit)
+
+The project provides tools to test and validate these findings on your own hardware, as results may vary with different Intel GPU generations.
+
+**Note**: This is a community project with honest, evidence-based recommendations. Results are specific to tested hardware (Intel Core i7-1185G7 + Iris Xe). For production deployments or different hardware, conduct your own benchmarks using the included tools.
