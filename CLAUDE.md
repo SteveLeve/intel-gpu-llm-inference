@@ -11,6 +11,7 @@ This is an Intel GPU LLM inference toolkit that enables local LLM inference on I
 - **Framework performance is model-specific:** Mistral 7B favors OpenVINO (1.6x faster), Llama 3.1 8B favors Ollama (1.3x faster)
 - **Recommended setup:** Ollama on CPU for simplicity and competitive performance
 - **Best all-around model:** Qwen3-VL 8B via Ollama (5.14 tok/s + vision capabilities)
+- **Best large model:** GPT-OSS 20B via Ollama (6.67 tok/s, surprisingly faster than 8B models due to sparse MoE)
 
 ## Architecture
 
@@ -231,10 +232,11 @@ OpenVINO models use `--weight-format int4` by default for better performance on 
 
 Based on comprehensive testing with Intel Core i7-1185G7 + Iris Xe Graphics:
 
-### Complete Performance Matrix (11 configurations tested)
+### Complete Performance Matrix (12 configurations tested)
 
 | Model | Framework | Device | Speed | Load Time | Recommendation |
 |-------|-----------|--------|-------|-----------|----------------|
+| **GPT-OSS 20B** | **Ollama** | **CPU** | **6.67 tok/s** | 7.07s | **Best large model** 💎 |
 | **Qwen3-VL 8B** | **Ollama** | **CPU** | **5.14 tok/s** | 1.88s | **Best all-around** 🏆 |
 | **Llama 3.1 8B** | **Ollama** | **CPU** | **4.50 tok/s** | 0.22s | **Best tool calling** ⭐ |
 | Llama 3.1 8B | OpenVINO | GPU | 4.3 tok/s | 15.4s | Not recommended |
@@ -256,13 +258,20 @@ Based on comprehensive testing with Intel Core i7-1185G7 + Iris Xe Graphics:
    - **Llama 3.1 8B:** Ollama wins (4.50 tok/s vs 3.4-4.3 tok/s OpenVINO, 1.3x faster)
    - Different models are optimized differently for each framework
 
-3. **Recommended setup for this hardware:**
+3. **Large models can be surprisingly fast:**
+   - **GPT-OSS 20B:** Faster than 8B models (6.67 tok/s) due to sparse MoE architecture
+   - Only 3.6B active parameters per inference (out of 21B total)
+   - MXFP4 quantization enables efficient inference
+   - **Note:** OpenVINO conversion requires 64GB+ RAM (not feasible on 30GB system)
+
+4. **Recommended setup for this hardware:**
+   - **Large model/reasoning:** GPT-OSS 20B via Ollama (6.67 tok/s, excellent reasoning)
    - **Primary:** Qwen3-VL 8B via Ollama (vision + text, fast, simple)
    - **Tool calling:** Llama 3.1 8B via Ollama (best-in-class function calling)
    - **Maximum speed:** Mistral 7B via OpenVINO CPU (if setup complexity acceptable)
 
-4. **Avoid:**
+5. **Avoid:**
    - GPU inference (no benefit, longer load times)
-   - 14B+ models (memory pressure, expect 3-3.5 tok/s)
+   - Dense 14B+ models (memory pressure, expect 3-3.5 tok/s)
 
 📊 **Full analysis:** See `COMPREHENSIVE_PERFORMANCE_COMPARISON.md` for detailed results and methodology.

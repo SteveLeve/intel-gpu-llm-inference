@@ -28,6 +28,7 @@ For maximum speed with simpler tasks, **Mistral 7B on OpenVINO GPU** (9.4 tok/s)
 | **Mistral 7B** | 7.0B | OpenVINO | **GPU** | **9.4** ⭐ | 10.4s | Good | Text only |
 | **Mistral 7B** | 7.0B | OpenVINO | CPU | **9.5** | 3.5s | Good | Text only |
 | **Mistral 7B** | 7.0B | Ollama | CPU | 5.86 | ~3s | Good | Text only |
+| **GPT-OSS 20B** | 20B (3.6B active) | Ollama | CPU | **6.67** ⚡ | 7.07s | Excellent | Reasoning + Text |
 | **Qwen3-VL 8B** | 8.0B | Ollama | CPU | **5.14** 🏆 | 1.88s | **Excellent** | **Vision + Text** |
 | **Llama 3.1 8B** | 8.0B | Ollama | CPU | 4.50 | 0.22s | Excellent | Text + Tool calling |
 | **Llama 3.1 8B** | 8.0B | OpenVINO | GPU | 4.3 | 15.4s | Excellent | Text + Tool calling |
@@ -37,7 +38,7 @@ For maximum speed with simpler tasks, **Mistral 7B on OpenVINO GPU** (9.4 tok/s)
 | TinyLlama | 1.1B | OpenVINO | GPU | 19.6 | 2.6s | Basic | Text only |
 | TinyLlama | 1.1B | OpenVINO | CPU | 27.4 | 0.8s | Basic | Text only |
 
-⭐ Fastest overall | 🏆 Best all-rounder
+⭐ Fastest overall | 🏆 Best all-rounder | ⚡ Fastest large model
 
 ---
 
@@ -133,6 +134,49 @@ This is the **opposite** of Mistral 7B where OpenVINO was 1.6x faster. Llama 3.1
 | Llama 3.1 8B | 4.50 tok/s | Text only | **Best-in-class** | Excellent | Function calling |
 
 **Recommendation:** Use **Qwen3-VL** as primary (faster + vision), keep **Llama 3.1** for function calling tasks.
+
+### GPT-OSS 20B: Large Model Performance
+
+**Test Date:** November 6, 2025
+
+| Framework | Device | Speed | Load Time | Setup | Conversion Status |
+|-----------|--------|-------|-----------|-------|-------------------|
+| **Ollama** | **CPU** | **6.67 tok/s** ⭐ | 7.07s | Very Low | N/A (GGUF) |
+| OpenVINO | GPU/CPU | N/A | N/A | N/A | ❌ **Failed** |
+
+**Key Metrics (Ollama):**
+- **Generation speed:** 6.67 tokens/sec (916 tokens generated)
+- **Prompt processing:** 16.61 tokens/sec (82 token prompt)
+- **Model load time:** 7.07 seconds
+- **Total duration:** 2m 30s for complete response
+
+**Surprising Finding:** Despite being a 20B parameter model, GPT-OSS 20B runs **faster than all 8B models tested** (except Qwen3-VL by a small margin). This is due to:
+
+1. **Sparse MoE Architecture:** Only 3.6B parameters active per inference (out of 21B total)
+2. **MXFP4 Quantization:** Ultra-aggressive mixed-precision 4-bit quantization by OpenAI
+3. **Inference Optimizations:** Purpose-built for low-latency local inference
+
+**Performance Comparison:**
+- GPT-OSS 20B: **6.67 tok/s**
+- Qwen3-VL 8B: 5.14 tok/s (30% slower)
+- Llama 3.1 8B: 4.50 tok/s (48% slower)
+- Llama 3.1 8B (OpenVINO): 3.4-4.3 tok/s (55-96% slower)
+
+**OpenVINO Conversion Attempt:**
+
+| Attempt | Configuration | Result |
+|---------|--------------|--------|
+| 1 | 30GB RAM, 8GB swap, int4 | ❌ Killed at checkpoint loading (67%) |
+| 2 | 30GB RAM, 40GB swap, int4 | ❌ Killed after checkpoint loading (100%) |
+| 3 | 30GB RAM, 40GB swap, mixed int4/int8 | ❌ Killed after checkpoint loading |
+
+**Conclusion:** OpenVINO conversion requires **64-80GB physical RAM**. The model loads all 20B parameters in FP16 (~40-50GB) before quantizing, exceeding available memory even with 70GB total (RAM+swap).
+
+**Recommendation:**
+- **Use GPT-OSS 20B via Ollama** for best performance
+- Fastest large model option on this hardware
+- Excellent for reasoning-heavy tasks
+- No OpenVINO testing possible without hardware upgrade
 
 ---
 
@@ -240,6 +284,16 @@ This is the **opposite** of Mistral 7B where OpenVINO was 1.6x faster. Llama 3.1
 - Simple setup (Ollama)
 - Good quality
 - Use when speed matters more than capabilities
+
+### Large Model / Advanced Reasoning
+
+**Use:** **GPT-OSS 20B (Ollama)**
+- 6.67 tok/s (fastest large model tested)
+- 20B parameters with 3.6B active (sparse MoE architecture)
+- Excellent reasoning capabilities
+- Configurable reasoning effort (low/medium/high)
+- Simple setup via Ollama
+- **Note:** OpenVINO conversion not feasible (requires 64GB+ RAM)
 
 ### Development & Testing
 
@@ -405,11 +459,13 @@ ollama run mistral:7b-instruct-q4_0
 | Llama 3.1 | 8.0B | OpenVINO | GPU | 4.3 tok/s | 15.4s | Nov 2 |
 | Llama 3.1 | 8.0B | OpenVINO | CPU | 3.4 tok/s | 6.1s | Nov 2 |
 | Qwen3-VL | 8.0B | Ollama | CPU | 5.14 tok/s | 1.88s | Nov 2 |
+| GPT-OSS 20B | 20B (3.6B active) | Ollama | CPU | 6.67 tok/s | 7.07s | Nov 6 |
 
-**Total configurations tested:** 11 (across 5 unique models, 2 frameworks, 2 devices)
+**Total configurations tested:** 12 (across 6 unique models, 2 frameworks, 2 devices)
+**OpenVINO conversion attempts:** GPT-OSS 20B failed (requires 64GB+ RAM)
 
 ---
 
-*Testing conducted November 1-2, 2025*
+*Testing conducted November 1-2, 2025 (initial), November 6, 2025 (GPT-OSS 20B)*
 *System: Intel Core i7-1185G7 @ 3.00GHz, Intel Iris Xe Graphics, 30GB RAM*
 *Frameworks: OpenVINO GenAI 2025.0, Ollama latest*

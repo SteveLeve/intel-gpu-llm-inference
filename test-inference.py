@@ -48,6 +48,12 @@ MODELS = {
         "huggingface_id": "meta-llama/Llama-3.1-8B-Instruct",
         "output_dir": "llama31_8b_ir",
         "description": "Meta's Llama 3.1 8B, tested with Ollama for comparison"
+    },
+    "gptoss20b": {
+        "name": "GPT-OSS 20B",
+        "huggingface_id": "openai/gpt-oss-20b",
+        "output_dir": "gpt_oss_20b_ir",
+        "description": "OpenAI's open-weight 20B model with reasoning capabilities"
     }
 }
 
@@ -150,10 +156,12 @@ Examples:
   python test-inference.py --model llama3 --convert-only
 
 Available models:
-  phi3     - Phi-3 Mini (3.8B) - Best for testing
-  mistral  - Mistral 7B Instruct
-  llama3   - Llama 3 8B Instruct (requires HF auth)
-  qwen2vl  - Qwen2-VL 7B Instruct (vision-language model)
+  phi3      - Phi-3 Mini (3.8B) - Best for testing
+  mistral   - Mistral 7B Instruct
+  llama3    - Llama 3 8B Instruct (requires HF auth)
+  llama31   - Llama 3.1 8B Instruct
+  qwen2vl   - Qwen2-VL 7B Instruct (vision-language model)
+  gptoss20b - GPT-OSS 20B (OpenAI's reasoning model)
         """
     )
     
